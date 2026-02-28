@@ -10,14 +10,14 @@ const int turbidity_pin = 35;
 //deep sleep params
 #define us_to_s 1000000ULL
 // 5x60 = 300 (5 minutes to seconds) 
-#define time_to_sleep 60
+#define time_to_sleep 300
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 float phTask(int ph_pin){
   float ph_voltage_adc = analogRead(ph_pin);
-  float ph_voltage = ph_voltage_adc*(3.0/4096);
+  float ph_voltage = ph_voltage_adc*(3.3/4096);
   //change the values after calibration
   float ph_value = (3.0*ph_voltage) + 0.5;
   return ph_value;
