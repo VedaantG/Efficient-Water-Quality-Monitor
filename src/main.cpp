@@ -16,31 +16,48 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 float phTask(int ph_pin){
-  float ph_voltage_adc = analogRead(ph_pin);
-  float ph_voltage = ph_voltage_adc*(3.3/4096);
+  float ph_voltage_adc = 0.0;
+  for(int i=0; i<20;i++){
+    ph_voltage_adc += analogRead(ph_pin);
+    delay(2);
+  }
+  float ph_voltage = ph_voltage_adc*(3.3/4096*20);
   //change the values after calibration
   float ph_value = (3.0*ph_voltage) + 0.5;
   return ph_value;
 }
 
 float Turbidity(int turbidity_pin){
-  float tubrbidity_voltage_adc = analogRead(turbidity_pin);
-  float turbidity_voltage = tubrbidity_voltage_adc*(3.3/4096);
+  float tubrbidity_voltage_adc = 0.0;
+  for(int j=0;j<20;j++){
+    tubrbidity_voltage_adc += analogRead(turbidity_pin);
+    delay(2);
+  }
+  float turbidity_voltage = tubrbidity_voltage_adc*(3.3/4096*20);
   //change this values after calibration
   float turbidity_NTU = (-1120.4*turbidity_voltage*turbidity_voltage)+(5742.3*turbidity_voltage)-4352.9;
   return turbidity_NTU;
 }
 
 float Tempreature(){
-  sensors.begin();
-  delay(1);
   sensors.requestTemperatures();
-  float tempC = sensors.getTempCByIndex(0);
-  return tempC;
+  float tempSum = 0.0;
+  for(int k=0;k<20;k++){
+    tempSum += sensors.getTempCByIndex(0);
+    delay(2);
+  }
+  float tempC = tempSum/20;
+  if (tempSum == DEVICE_DISCONNECTED_C){
+    return NAN;
+  }
+  else{
+    return tempC;
+  }
 }
 
 void setup() {
   Serial.begin(115200);
+  sensors.begin();
   Serial.println("____________Water Quality Monitor____________");
   pinMode(ph_pin,INPUT);
   pinMode(turbidity_pin,INPUT);
@@ -61,6 +78,7 @@ void setup() {
   //deep sleep
   esp_sleep_enable_timer_wakeup(time_to_sleep*us_to_s);
   delay(100);
+  Serial.flush();
   esp_deep_sleep_start();
 }
 
