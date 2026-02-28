@@ -47,6 +47,7 @@ float Tempreature(){
     delay(2);
   }
   float tempC = tempSum/20;
+  delay(100);
   if (tempSum == DEVICE_DISCONNECTED_C){
     return NAN;
   }
