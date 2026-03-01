@@ -35,7 +35,7 @@ float phTask(int ph_pin){
   if (spikeCount>3){
     return NAN;
   }
-  float ph_voltage = ph_voltage_adc*(3.3/(4096*20));
+  float ph_voltage = ph_voltage_adc*(3.3/(4095*20));
   //change the values after calibration
   float ph_value = (3.0*ph_voltage) + 0.5;
   if(ph_value < 0 || ph_value > 14){
@@ -64,7 +64,7 @@ float Turbidity(int turbidity_pin){
   if(spikeCount > 3){
     return NAN;
   }
-  float turbidity_voltage = tubrbidity_voltage_adc*(3.3/(4096*20));
+  float turbidity_voltage = tubrbidity_voltage_adc*(3.3/(4095*20));
   //change this values after calibration
   float turbidity_NTU = (-1120.4*turbidity_voltage*turbidity_voltage)+(5742.3*turbidity_voltage)-4352.9;
   if (turbidity_NTU < 0){
@@ -82,8 +82,8 @@ float Tempreature(){
     if(tempSum != DEVICE_DISCONNECTED_C){
       sum += tempSum;
       validCount++;
-      delay(2);
     }
+    delay(1);
   }
   if (validCount == 0){
     return NAN;
