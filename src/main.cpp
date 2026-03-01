@@ -17,13 +17,13 @@ DallasTemperature sensors(&oneWire);
 
 float phTask(int ph_pin){
   float ph_voltage_adc = 0.0;
-  float previous_reading = 0.0;
+  float previous_reading = analogRead(ph_pin);
   int spikeCount = 0;
   float current_reading;
   for(int i=0; i<20;i++){
     ph_voltage_adc += analogRead(ph_pin);
     current_reading = ph_voltage_adc;
-    if(abs(current_reading - previous_reading)>(0.2*previous_reading)){
+    if(previous_reading > 0 && abs(current_reading - previous_reading)>(0.2*previous_reading)){
       spikeCount++;
     }
     else{
@@ -47,12 +47,12 @@ float phTask(int ph_pin){
 float Turbidity(int turbidity_pin){
   float tubrbidity_voltage_adc = 0.0;
   int spikeCount = 0;
-  float previous_reading = 0.0;
+  float previous_reading = analogRead(turbidity_pin);
   float current_reading;
   for(int j=0;j<20;j++){
     tubrbidity_voltage_adc += analogRead(turbidity_pin);
     current_reading = tubrbidity_voltage_adc;
-    if(abs(current_reading - previous_reading)>(0.2*previous_reading)){
+    if(previous_reading > 0 && abs(current_reading - previous_reading)>(0.2*previous_reading)){
       spikeCount++;
     }
     else{
