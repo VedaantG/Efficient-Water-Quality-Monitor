@@ -21,26 +21,27 @@ float obtain_turbidity_calibration_val(int pin,float ntu){
     return turbidity_voltage_adc;
 }
 
-float obtain_slope_params_ph(float v1,float v2,float ph1,float ph2){
-    float m,b;
-    m = ((ph2 - ph1)/(v2 - v1));
-    b = ph1 - (m*v1);
-    return m,b;
+linear_params obtain_slope_params_ph(float v1,float v2,float ph1,float ph2){
+    linear_params p;
+    if(abs(v2-v1)<0.0001) return NAN;
+    p.m = ((ph2 - ph1)/(v2 - v1));
+    p.b = ph1 - (m*v1);
+    return p;
 }
 
-float obtain_slope_params_turbidity(float tur1, float tur2,float tur3,float v1,float v2,float v3){
+quad_params obtain_slope_params_turbidity(float tur1, float tur2,float tur3,float v1,float v2,float v3){
+    quad_params q;
     float det = (v1*v1*(v2-v3)) - (v1*((v2*v2)-(v3*v3))) + ((v3*v2*v2)-(v3*v3*v2));
     if (det == 0){
         return NAN;
     }
-    float c11,c21,c31;
-    c11 = (tur1*(v2-v3)) + (tur2*(v3-v1)) + (tur3*(v1-v2));
-    c21 = (tur1*((v3*v3)-(v2*v2))) + (tur2*((v1*v1)-(v3*v3))) + (tur3*((v2*v2)-(v1*v1)));
-    c31 = (tur1*((v3*v2*v2)-(v3*v3*v2))) + (tur2*((v3*v3*v1)-(v3*v1*v1))) + (tur3*((v2*v1*v1)-(v2*v2*v1)));
+    q.a = (tur1*(v2-v3)) + (tur2*(v3-v1)) + (tur3*(v1-v2));
+    q.b = (tur1*((v3*v3)-(v2*v2))) + (tur2*((v1*v1)-(v3*v3))) + (tur3*((v2*v2)-(v1*v1)));
+    q.c = (tur1*((v3*v2*v2)-(v3*v3*v2))) + (tur2*((v3*v3*v1)-(v3*v1*v1))) + (tur3*((v2*v1*v1)-(v2*v2*v1)));
 
-    c11 = c11/det;
-    c21 = c21/det;
-    c31 = c31/det;
+    q.a = q.a/det;
+    q.b = q.b/det;
+    q.c = q.c/det;
 
-    return c11,c21,c31; //a,b,c
+    return q; //a,b,c
 }
